@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from os import environ
-from uuid import uuid4
-from tempfile import NamedTemporaryFile
-from subprocess import Popen, check_output, PIPE
 from collections import namedtuple
+from os import environ
+from subprocess import check_call
+from tempfile import NamedTemporaryFile
+from uuid import uuid4
 
 FASTTEXT_EXE_PATH = environ.get('FASTTEXT_EXE', '/path/to/fastText')
 MODEL_BIN_PATH = 'model.bin'
@@ -40,9 +40,16 @@ def parse_input_file(input_file_name):
 
 
 def retrieve_word_vectors_from_output(output):
+    confirmed_vectors_list = []
     output_vectors_list = output.decode().split(' ')
-    vectors_found = [possible_vector for possible_vector in output_vectors_list if isinstance(possible_vector, str)]
-    return vectors_found
+    for possible_vector in output_vectors_list:
+        try:
+            possible_vector = possible_vector.replace('\n', '').strip()
+            possible_vector = float(possible_vector)
+        except Exception as e:
+            confirmed_vectors_list.append(possible_vector)
+
+    return confirmed_vectors_list
 
 
 if __name__ == '__main__':
