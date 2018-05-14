@@ -7,7 +7,7 @@ from subprocess import check_output
 from tempfile import NamedTemporaryFile
 from uuid import uuid4
 
-FASTTEXT_EXE_PATH = environ.get('FASTTEXT_EXE', '/path/to/fasttext_binary')
+FASTTEXT_EXE_PATH = environ.get('FASTTEXT_EXE_PATH', '/path/to/fasttext_binary')
 MODEL_BIN_PATH = 'model.bin'
 
 SentenceRecord = namedtuple('SentenceRecord', 'id sentence_string word_vectors_list')
@@ -50,7 +50,8 @@ def retrieve_word_vectors_from_output(output):
             possible_vector = possible_vector.replace('\n', '').strip()
             possible_vector = float(possible_vector)
         except Exception as e:
-            confirmed_vectors_list.append(possible_vector)
+            if len(possible_vector) > 0:
+                confirmed_vectors_list.append(possible_vector)
 
     return confirmed_vectors_list
 
